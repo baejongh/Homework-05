@@ -37,5 +37,4 @@ public class CompareEvent<T extends Comparable<T>>  implements SortEvent<T> {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 }

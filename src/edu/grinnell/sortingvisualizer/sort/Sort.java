@@ -1,7 +1,10 @@
 package edu.grinnell.sortingvisualizer.sort;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.xml.soap.Node;
 
 import edu.grinnell.sortingvisualizer.events.CompareEvent;
 import edu.grinnell.sortingvisualizer.events.CopyEvent;
@@ -10,8 +13,10 @@ import edu.grinnell.sortingvisualizer.events.SwapEvent;
 
 public class Sort {
 
-	public <T extends Comparable<T>> void eventSort(T[] arr, List<SortEvent<T>> events) {
-		
+	public static <T extends Comparable<T>> void eventSort(T[] arr, List<SortEvent<T>> events) {
+		for (SortEvent<T> item : events) {
+			item.apply(arr);
+		}
 	}
 	
 	//quicksort
@@ -22,8 +27,8 @@ public class Sort {
 	}
 
 	public static <T extends Comparable<T>> List<SortEvent<T>> quickSort(T[] arr, int lowerIndex,
-			int higherIndex, List<SortEvent<T>> events) {
-
+			int higherIndex) {
+		List<SortEvent<T>> events = new LinkedList<>();
 		if (arr == null || arr.length == 0) {
 			return events;
 		}
@@ -58,11 +63,11 @@ public class Sort {
 		// call quickSort() method recursively
 		if (lowerIndex < j) {
 			events.add((SortEvent<T>) new CompareEvent<T>(lowerIndex,j));
-			quickSort(arr, lowerIndex, j, events);
+			quickSort(arr, lowerIndex, j);
 		}
 		if (i < higherIndex){
 			events.add((SortEvent<T>) new CompareEvent<T>(i,higherIndex));
-			quickSort(arr, i, higherIndex, events);
+			quickSort(arr, i, higherIndex);
 		}
 		return events;
 	}
@@ -79,22 +84,29 @@ public class Sort {
 		while(i < mid && j < hi) {
 			if (arr[i].compareTo(arr[j]) <= 0)  {
 				events.add((SortEvent<T>) new CompareEvent<T>(i,j));
-				ret[k++] = arr[i++];
+				ret[k] = arr[i];
 				events.add((SortEvent<T>) new CopyEvent<T>(i,arr[i]));
+				k++;
+				i++;
 			}
 			else {
-				events.add((SortEvent<T>) new CompareEvent<T>(i,j));
-				ret[k++] = arr[j++];
+				ret[k] = arr[j];
 				events.add((SortEvent<T>) new CopyEvent<T>(j,arr[j]));
+				k++;
+				i++;
 			}
 		}
 		while (i<mid) { 
-			ret[k++] = arr[i++];
+			ret[k] = arr[i];
 			events.add((SortEvent<T>) new CopyEvent<T>(i,arr[i]));
+			k++;
+			i++;
 		}
 		while (j<hi) { 
-			ret[k++] = arr[j++];
+			ret[k] = arr[j];
 			events.add((SortEvent<T>) new CopyEvent<T>(j,arr[j]));
+			k++;
+			j++;
 		}
 		for (int m = 0; m < ret.length; m++)  {
 			arr[lo + m] = (T) ret[m];
@@ -102,27 +114,27 @@ public class Sort {
 		}
 	}
 
-	public static <T extends Comparable<T>> List<SortEvent<T>>  mergeSort(T[] arr, 
-			List<SortEvent<T>> events)  {
-		mergeSort(arr, 0, arr.length, events);
+	public static <T extends Comparable<T>> List<SortEvent<T>>  mergeSort(T[] arr)  {
+		List<SortEvent<T>> events = new LinkedList<>();
+		mergeSort(arr, 0, arr.length);
 		return events;
 	}
 
-	private static <T extends Comparable<T>> List<SortEvent<T>> mergeSort(T[] arr, int lo, int hi,
-			List<SortEvent<T>> events)  {
+	private static <T extends Comparable<T>> List<SortEvent<T>> mergeSort(T[] arr, int lo, int hi)  {
+		List<SortEvent<T>> events = new LinkedList<>();
 		if (hi - lo > 1)  {
 			int mid = (hi + lo) /2;
-			mergeSort(arr, lo, mid, events);
-			mergeSort(arr, mid, hi, events);
+			mergeSort(arr, lo, mid);
+			mergeSort(arr, mid, hi);
 			merge(arr, lo, mid, hi, events);
 		}
 		return events;
 	}
 
 	//bubble sort from http://mathbits.com/MathBits/Java/arrays/Bubble.htm
-	public static <T extends Comparable<T>> List<SortEvent<T>> bubbleSort(T[] arr ,
-			List<SortEvent<T>> events)
+	public static <T extends Comparable<T>> List<SortEvent<T>> bubbleSort(T[] arr)
 	{
+		List<SortEvent<T>> events = new LinkedList<>();
 		int j;
 		boolean flag = true;   // set flag to true to begin first pass
 		T temp;   //holding variable
@@ -146,8 +158,8 @@ public class Sort {
 	}
 
 	//insertion sort from: PM's website
-	public static <T extends Comparable<T>> List<SortEvent<T>> insertionSort(T[] arr,
-			List<SortEvent<T>> events) {
+	public static <T extends Comparable<T>> List<SortEvent<T>> insertionSort(T[] arr) {
+		List<SortEvent<T>> events = new LinkedList<>();
 		for (int i = 0; i < arr.length; i++) {
 			for (int j = i; j < arr.length; j++) {
 				if (arr[j].compareTo(arr[i]) < 0) {
@@ -162,9 +174,9 @@ public class Sort {
 
 	//selection sort from: http://www.java2novice.com/java-sorting-algorithms/selection-sort/
 
-	public static <T extends Comparable<T>> List<SortEvent<T>> selectionSort(T[] arr,
-			List<SortEvent<T>> events) 
+	public static <T extends Comparable<T>> List<SortEvent<T>> selectionSort(T[] arr) 
 	{
+		List<SortEvent<T>> events = new LinkedList<>();
 		for (int i = 0; i < arr.length - 1; i++)
 		{
 			int index = i;
@@ -180,8 +192,8 @@ public class Sort {
 	}
 
 	//cocktail sort from: http://www.javacodex.com/Sorting/Cocktail-Sort
-	public static <T extends Comparable<T>> List<SortEvent<T>> cocktailSort(T[] arr,
-			List<SortEvent<T>> events){
+	public static <T extends Comparable<T>> List<SortEvent<T>> cocktailSort(T[] arr){
+		List<SortEvent<T>> events = new LinkedList<>();
 		boolean swapped;
 		do {
 			swapped = false;
@@ -212,12 +224,13 @@ public class Sort {
 		return events;
 	}
 
-	public static void main(String[] args) {
-
+	public static <T extends Comparable<T>> void main(String[] args) {
 		Integer[] tester = new Integer[] {5, 34, 21, 12, 65, 1};
-		for (int element : tester) {
+		Integer[] tester2 = new Integer[] {5, 34, 21, 12, 65, 1};
+		eventSort(tester2, selectionSort(tester));
+		//selectionSort(tester);
+		for(int element : tester2) {
 			System.out.println(element);
 		}
-
 	}
 }
