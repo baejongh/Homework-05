@@ -18,12 +18,18 @@ public class Sort {
 			item.apply(arr);
 		}
 	}
-	
+
 	//quicksort
 	public static <T extends Comparable<T>> void swap(T[] arr, int i, int j) {
 		T temp = arr[i];
 		arr[i] = arr[j];
 		arr[j] = temp;
+	}
+
+	public static <T extends Comparable<T>> List<SortEvent<T>>  quickSort(T[] arr)  {
+		List<SortEvent<T>> events = new LinkedList<>();
+		quickSort(arr, 0, arr.length);
+		return events;
 	}
 
 	public static <T extends Comparable<T>> List<SortEvent<T>> quickSort(T[] arr, int lowerIndex,
@@ -173,7 +179,6 @@ public class Sort {
 	}
 
 	//selection sort from: http://www.java2novice.com/java-sorting-algorithms/selection-sort/
-
 	public static <T extends Comparable<T>> List<SortEvent<T>> selectionSort(T[] arr) 
 	{
 		List<SortEvent<T>> events = new LinkedList<>();
@@ -227,7 +232,7 @@ public class Sort {
 	public static <T extends Comparable<T>> void main(String[] args) {
 		Integer[] tester = new Integer[] {5, 34, 21, 12, 65, 1};
 		Integer[] tester2 = new Integer[] {5, 34, 21, 12, 65, 1};
-		eventSort(tester2, selectionSort(tester));
+		eventSort(tester2, cocktailSort(tester));
 		//selectionSort(tester);
 		for(int element : tester2) {
 			System.out.println(element);
